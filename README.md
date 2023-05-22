@@ -1,7 +1,7 @@
 # lpsmapper
 Piloting the collection of geographic information from Longitudinal Population Studies (LPS) for future climate-health research.
 
-![lpsmapper portal](https://github.com/wpgp/lpsmapper/img/img1.png)
+![lpsmapper portal](https://wpgp.github.io/lpsmapper/img/img1.png)
 
 **How to cite this work**
 
