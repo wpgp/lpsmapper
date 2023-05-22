@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="LPS Mapper">
+        <meta name="author" content="WorldPop">
+        <title>LPS Mapper</title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.css" crossorigin="" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">  
+
+        <link rel="stylesheet" href="./css/style.css">
+
+    </head>
+
+    <body>
+        <header>
+            <div class="navbar navbar-dark shadow-sm navbar-expand-lg">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">LPS Mapper</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarText">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" id="btnAbout">About</a>
+                            </li>
+                        </ul>
+                        <span class="navbar-text p-0 m-0">
+
+                        </span>
+                    </div>
+                </div>
+            </div>            
+        </header> 
+
+        <div id="map" style=""></div>
+
+        <div id="controlPanelRightID" class="p-3" style="">
+
+            <div class="mb-5">
+                <div class="float-start">  <h5>Select LPS</h5> </div>
+                <div class="float-end"><a href="#" id="btnSettings"><i class="fa fa-cog"></i></a></div>
+            </div>
+
+            <form style="z-index: 100000;">
+                <div class="form-group mb-3">
+                    <label for="idSelectRegion" class="mb-1">Country</label>
+                    <select class="form-select form-select-sm" id="idSelectRegion" >
+                        <option value="0" selected>Select Country</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="idSelectNetwork"  class="mb-1">Network</label>
+                    <select class="form-select form-select-sm" id="idSelectNetwork" disabled title="Select Network">
+                    </select>
+                </div>    
+                <div class="form-group mb-3">
+                    <label for="idSelectLPS"  class="mb-1">LPS</label>
+                    <select class="form-select form-select-sm" id="idSelectLPS" disabled>
+                    </select>
+                </div>
+
+            </form>            
+            <div class="float-end">
+                <button type="button" class="btn btn-sm btn-outline-primary" id="btnReset">
+                    <span class="btn-label"><i class="fas fa-redo-alt"></i></span> Reset
+                </button>
+            </div>
+        </div>  
+
+
+
+        <div id="controlPanelLeftID" class="p-2" style="display:none">
+
+            <div class="float-end">
+                <button type="button" class="btn btn-labeled btn-light btn-sm" id="btnCloseLeftPanel" style="color: black" 
+                        data-toggle="tooltip" data-placement="top" title="Close">
+                    <span class="btn-label"><i class="fas fa-window-close"></i></span> 
+                </button>
+            </div>
+            <div class="float-end">
+                <a type="button" class="btn btn-labeled btn-light btn-sm" id="DownloadFileCSV" style="color: black" 
+                   data-toggle="tooltip" data-placement="top" title="Download">
+                    <span class="btn-label"><i class="fas fa-download"></i></span> 
+                </a>
+            </div> 
+            <div class="float-end">
+                <a type="button" class="btn btn-labeled btn-light btn-sm" id="btnQuestion" style="color: black" 
+                   data-toggle="tooltip" data-placement="top" title="Further information">
+                    <span class="btn-label"><i class="fas fa-question-circle"></i></span> 
+                </a>
+            </div>              
+            <div class="float-start">
+                <h5 id="tb_container_title"></h5>
+            </div>
+            <div  id="controlPanelLeftID_container" style="overflow-y: auto; height: 95%;width: 100%">
+                <div  id="tb_container">
+                </div>
+            </div>
+        </div>            
+
+        <!--  Modal about -->
+        <div class="modal fade "  data-backdrop="false"  id="idMdAbout" tabindex="-1"  aria-labelledby="ModalAbout" style="opacity: 0.95;z-index: 2200">
+            <div class="modal-dialog shadow-lg modal-lg" style="overflow-y: initial !important"  role="document" >
+                <div class="modal-content">
+                    <div class="modal-header" style="padding: 0.5rem;cursor: move;">
+                        <h5 class="modal-title" id="ModalAboutLabel">About</h5>                 
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-y: auto">
+                        <div class="container">
+                            <div style="font-size: 12px;">
+
+                                <p>Longitudinal population studies (LPS), including cohorts, panel surveys and biobanks, are a means of studying how health outcomes are influenced over time by biological, social and environmental factors. LPS have great potential to explore the impacts of climate hazards on human health, but the climate exposure of each is unclear.   </p>
+                                <p>As such, to utilise LPS most effectively, we first need to understand the geography that they represent. A special case of LPS are Health and Demographic Surveillance Systems (HDSS) that monitor demographic and health characteristics of a population living in specific geographic areas. They are increasingly used to assess health outcomes and determinants in LMICs in place of national civil registration and vital statistics, which are often incomplete and ineffective.</p>
+                                <p>To provide a comprehensive picture of health and population dynamics across much wider geographical areas, many HDSS sites have joined networks such as the International Network of field sites with continuous Demographic Evaluations of Populations and Their Health (INDEPTH) or Child Health and Mortality Prevention Surveillance (CHAMPS). Therefore, WorldPop (www.worldpop.org) at the University of Southampton is working with Wellcome Trust to assemble geospatial datasets of these networks’ sites to provide useful information to support further research on climate and longitudinal population data. Starting in early 2022, the WorldPop team have focused on collecting, updating, and mapping the HDSS on both INDEPTH and CHAMPS networks.</p>
+                                <p>This portal presents a visualisation and tabular outputs of the HDSS sites in both INDEPTH and CHAMPS sites.</p>
+
+                                <p class="mt-2"><strong>Acknowledgements</strong>
+                                <p>The analyses and report writing were undertaken by Natalia Tejedor-Garavito, Amy Bonnie, Andy Tatem and Maksym Bondarenko of <a href="https://www.worldpop.org/" target="_blank">WorldPop</a> at the University of Southampton, UK. 
+                                    The portal was developed by the <a href="https://sdi.worldpop.org/" target="_blank">Spatial Data Infrastructure (SDI) Team</a>  at WorldPop. 
+                                    The work is funded by the <a href="https://wellcome.org/" target="_blank">Wellcome Trust</a>. The authors acknowledge the support of the PMO Team at WorldPop.</p>
+
+
+                                <p class="mt-2"><strong>Instructions</strong></p>
+
+                                <ol>
+                                    <li>Select a country from the dropdown menu <strong>"Country"</strong>. This will allow you to visualize the networks and sites that take place in the selected countries.</li>
+                                    <li>Select the network of interest from the dropdown menu <strong>"Network"</strong>.</li>
+                                    <li>Select the site of interest using the dropdown menu <strong>"LPS"</strong>.</li>
+                                    <li>Once you select the LPs of interest you can click on the polygon on the map and a popup table will appear to display the information available for the site.</li>
+                                    <li>In the popup table you can click on the <span class="btn-label"><i class="fas fa-question-circle"></i></span> icon,  to get additional information.</li>
+                                    <li>If you would like to download the information provided for the LPS site you can click on the <span class="btn-label"><i class="fas fa-download"></i></span> icon.</li>
+                                    <li>Click on the <span class="btn-label"><i class="fas fa-window-close"></i></span> icon to close the table.</li>
+                                    <li>
+                                        Click on the settings icon  <i class="fa fa-cog"></i>. A new popup menu will appear. In there you will see the Landuse/Landcover box, where you can choose to display in the background from two different types of land use:
+                                        <ul>
+                                            <li>WorldCover 2021 v200&sup1;</li>
+                                            <li>Urban Expansion to 2030 &sup2; &sup3; </li>
+                                        </ul>
+                                    </li>
+                                    <li>In the settings menu you can also choose to add or remove the countries names by clicking on the <strong>"show country label"</strong> button.</li>
+                                    <li>Using the dropdown menu <strong>"Colour of LPS polygon"</strong> you can choose from different colours to display the boundaries of the LPS</li>
+                                    <li>Using the <strong>"Opacity of LPS polygon"</strong> sliding bar you can change the opacity of the polygons to allow you to visualize better the underlaying layer.</li>
+                                    <li>Once you are happy with the settings you can close the menu.</li>
+                                </ol>
+                                <p>References</p>
+                                <p>&sup1; Zanaga, D., Van De Kerchove, R., Daems, D., De Keersmaecker, W., Brockmann, C., Kirches, G., Wevers, J., Cartus, O., Santoro, M., Fritz, S., Lesiv, M., Herold, M., Tsendbazar, N.E., Xu, P., Ramoino, F., Arino, O., 2022. ESA WorldCover 10 m 2021 v200. https://doi.org/10.5281/zenodo.7254221. Available at https://esa-worldcover.org/. Accessed 01 February 2023.</p>
+                                <p>&sup2; Seto, K., B. Güneralp, and L.R. Hutyra. 2016. Global Grid of Probabilities of Urban Expansion to 2030. Palisades, New York: NASA Socioeconomic Data and Applications Center (SEDAC). https://doi.org/10.7927/H4Z899CG. Accessed 01 February 2023.</p>
+                                <p>&sup3; University of East Anglia Climatic Research Unit; Harris, I.C.; Jones, P.D.; Osborn, T. (2022): CRU TS4.06: Climatic Research Unit (CRU) Time-Series (TS) version 4.06 of high-resolution gridded data of month-by-month variation in climate (Jan. 1901- Dec. 2021). NERC EDS Centre for Environmental Data Analysis, date of citation. https://catalogue.ceda.ac.uk/uuid/e0b4e1e56c1c4460b796073a31366980 </p>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer p-1" >
+                        <button type="button" class="btn btn-secondary btn-sm mr-2" data-bs-dismiss="modal">Close</button> 
+                    </div>                    
+                </div>
+            </div>
+        </div>                             
+        <!--  Modal about  -->   
+
+        <!--  Modal Documentation -->
+        <div class="modal fade "  data-backdrop="false"  id="idMdDocumentation" tabindex="-1"  aria-labelledby="ModalDocumentation" style="opacity: 0.95;z-index: 2200">
+            <div class="modal-dialog shadow-lg modal-lg" style="overflow-y: initial !important"  role="document" >
+                <div class="modal-content">
+                    <div class="modal-header" style="padding: 0.5rem;cursor: move;">
+                        <h5 class="modal-title" id="ModalDocumentationLabel">Here below are the definitions that are found on the popup table for the sites.</h5>                 
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-y: auto">
+                        <div class="container">
+                            <div style="font-size: 12px;" id="DocumentationTabPopup">
+
+                                <p><strong>LPS site name</strong>: Name of the Longitudinal Population Study/ Demographic Surveillance Site (DSS).</p>
+                                <p><strong>Country</strong>: Country where the DSS is located</p>
+                                <p><strong>Administrative boundary name (GADM)</strong>: Name of the administrative boundary level (GADM&sup1;) in which the site is located (either first or second level); where the site crosses more than one boundary or contains multiple sub-sites across different boundaries, multiple administrative boundaries are listed. </p>
+                                <p><strong>GADM level </strong>: GADM administrative boundary level. Level 2 was used as default, with level 1 used where site size/distribution made this impractical.  </p>
+                                <p><strong>Type</strong>: Whether the site is urban, rural, or both.</p>
+                                <p><strong>Surveillance theme</strong>: Surveillance theme (e.g. Health and Demographic data).</p>
+                                <p><strong>Network</strong>: Which network the site is a part of (e.g. INDEPTH, CHAMPS)</p>
+                                <p><strong>When site surveillance began</strong>: When site surveillance began</p>
+                                <p><strong>When site surveillance ended</strong>: When site surveillance ended (or ongoing)</p>
+                                <p><strong>Frequency of visits (months)</strong>: Frequency of DSS visits in months</p>
+                                <p><strong>Geographic level</strong>: Spatial resolution of data collection (e.g. individual, household, village).</p>
+                                <p><strong>Number of people under surveillance</strong>: Number of people under surveillance at the start of the study</p>
+                                <p><strong>Number of households under surveillance</strong>: Number of households under surveillance</p>
+                                <p><strong>Number of villages</strong>: Number of villages under surveillance</p>
+                                <p><strong>Main outcomes</strong>: Main outputs of the survey (e.g. Deaths, Pregnancy, Migrations)</p>
+                                <p><strong>Website</strong>: Link to main webpage for DSS</p>
+                                <p><strong>Site-related publication 1</strong>: Link to site-related publication</p>
+                                <p><strong>Site-related publication 2</strong>: Link to site-related publication</p>
+                                <p><strong>Still Birth Rate/1000</strong>: Still Birth Rate /1,000&sup2;</p>
+                                <p><strong>Maternal Mortality Rate/100000</strong>: Maternal Mortality Rate /100,000&sup2;</p>
+                                <p><strong>Neonatal Mortality Rate/1000</strong>: Neonatal Mortality Rate /1,000&sup2;</p>
+                                <p><strong>Infant Mortality Rate /1,000</strong>: Infant Mortality Rate /1,000&sup2;</p>
+                                <p><strong>Under-5 Mortality rate /1,000</strong>: Under-5 Mortality rate /1,000&sup2;</p>
+                                <p><strong>Potential evapotranspiration (mm)</strong>: Climate Research Unit (CRU) total potential evapotranspiration for 2021&sup3. Original data provided in raster format, values were extracted using DSS polygon centroids – where more than one polygon exists for the same site, values were extracted for each individual polygon centroid and a median taken for the whole site.</p>
+                                <p><strong>Total precipitation (mm)</strong>: Climate Research Unit (CRU) total precipitation for 2021&sup3. Original data provided in raster format, values were extracted using DSS polygon centroids – where more than one polygon exists for the same site, values were extracted for each individual polygon centroid and a median taken for the whole site. </p>
+                                <p><strong>Average temperature (&#186;C)</strong>: Climate Research Unit (CRU) average maximum temperature for 2021&sup3. Original data provided in raster format, values were extracted using DSS polygon centroids – where more than one polygon exists for the same site, values were extracted for each individual polygon centroid and a median taken for the whole site.</p>
+                                <p><strong>Area (Km&sup2)</strong>: Area of site in kilometres squared.</p>
+                                <p><strong>References</strong></p>
+                                <p>&sup1; GADM. GADM Licence. 2021 [cited 1 February 2023]. Available: https://gadm.org/license.html.</p>
+                                <p>&sup2; Child Health and Mortality Prevention Surveillance (CHAMPS) network. https://champshealth.org/.</p>
+                                <p>&sup3; University of East Anglia Climatic Research Unit; Harris, I.C.; Jones, P.D.; Osborn, T. (2021): CRU TS4.05: Climatic Research Unit (CRU) Time-Series (TS) version 4.05 of high-resolution gridded data of month-by-month variation in climate (Jan. 1901- Dec. 2020). NERC EDS Centre for Environmental Data Analysis, date of citation. https://catalogue.ceda.ac.uk/uuid/c26a65020a5e4b80b20018f148556681</p>
+
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer p-1" >
+                        <button type="button" class="btn btn-secondary btn-sm mr-2" data-bs-dismiss="modal">Close</button> 
+                    </div>                    
+                </div>
+            </div>
+        </div>                             
+        <!--  Modal Documentation end -->      
+
+        <!--  Modal Settings -->
+        <div class="modal fade"  data-backdrop="false"  id="idMdSettings" tabindex="-1"  aria-labelledby="ModalSettings" style="opacity: 0.95;z-index: 2200">
+            <div class="modal-dialog shadow-lg"  role="document" >
+                <div class="modal-content">
+                    <div class="modal-header m-0 p-2" >
+                        <h5 class="modal-title" id="ModalSettingsLabel">Settings</h5>                 
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body" >
+                        <div class="container">
+
+                            <div class="card" style="width: 100%;">
+                                <div class="card-body" id="winSettings" style="z-index: 100000">
+                                    <h6 class="card-subtitle mb-2 text-muted">Landuse Landcover</h6>
+
+                                    <div class="form-check form-switch mb-2" style="padding-left: 0.5em;">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="SwitchCheckOSMLand">
+                                            <label class="form-check-label" for="SwitchCheckOSMLand">WorldCover 2021 v200 &sup1;</label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="SwitchCheckUrbanExpansion">
+                                            <label class="form-check-label" for="flexSwitchCheckChecked">Urban Expansion to 2030 &sup2;</label>
+                                        </div>
+                                    </div>
+
+                                    <p class="p-0 m-0"><small  class="text-muted">&sup1; ESA WorldCover 10 m 2021 v200.Available at https://esa-worldcover.org/</small></p>
+                                    <p class="p-0 m-0"><small  class="text-muted">&sup2; Global Grid of Probabilities of Urban Expansion to 2030. https://doi.org/10.7927/H4Z899CG</small></p>
+
+
+                                </div>
+                            </div> 
+
+                            <div class="mt-3">  
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="chCountryLabels" checked>
+                                    <label class="form-check-label" for="chCountryLabels">Show country labels</label>
+                                </div>    
+                            </div> 
+
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-6">
+
+                                        <div class="mt-3">  
+                                            <div class="form-group mb-3">
+                                                <label for="idSelectColorePl" class="mb-1">Colour of LPS polygon</label>
+                                                <select class="form-select form-select-sm" id="idSelectColorePl" style="width: 90%">
+                                                    <option value="red" selected>Red</option>
+                                                    <option value="black">Black</option>
+                                                    <option value="blue">Blue</option>
+                                                    <option value="gray">Gray</option>
+                                                    <option value="green">Green</option>
+                                                    <option value="maroon">Maroon</option>
+                                                    <option value="navy">Navy</option>
+                                                    <option value="olive">Olive</option>
+                                                    <option value="silver">Silver</option>
+                                                    <option value="yellow">Yellow</option>
+                                                    <option value="gold">Gold</option>
+                                                </select>
+                                            </div>   
+                                        </div>               
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="mt-3">  
+                                            <label for="customRangeOpacity" class="form-label">Opacity of LPS polygon</label>
+                                            <input type="range" class="form-range" min="0" max="1" step="0.1" value="0.9" id="customRangeOpacity" >  
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>                            
+
+
+                        </div>
+
+                        <div class="modal-footer" style="border-top:0">
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-dismiss="modal">Close</button> 
+                        </div>                    
+                    </div>
+                </div>
+            </div> 
+        </div> 
+
+
+    </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.min.js" crossorigin=""></script>
+
+<script src="./js/base.js" type="module"></script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(window).on("resize", function () {
+            $("#map").height($(window).height() - 42);
+            var h = $(window).height() - 200;
+
+            document.getElementById('controlPanelLeftID').style.height = h + "px";
+        }).trigger("resize");
+
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+
+        $("#btnQuestion").click(function (e) {
+            $('#idMdDocumentation').modal('toggle');
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+
+
+        $("#btnSettings").click(function (e) {
+            $('#idMdSettings').modal('toggle');
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+
+        $("#btnAbout").click(function (e) {
+            $('#idMdAbout').modal('toggle');
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+
+    });
+
+
+
+</script>
